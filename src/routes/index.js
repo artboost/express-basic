@@ -1,9 +1,7 @@
 const express = require('express');
 
-const ping = require('./ping');
-
 const router = express.Router();
 
-router.use('/ping', ping);
+router.get('/', (req, res) => res.send('hello world'));
 
 module.exports = router;
