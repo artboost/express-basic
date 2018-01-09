@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 app.use(router);
 
 // eslint-disable-next-line no-unused-vars
-app.use((err, req, res, next) => res.status(err.status ? err.status : 500).json({ error: err }));
+app.use((err, req, res, next) => res.status(err.status || 500).json({ error: err }));
 
 const server = app.listen(PORT);
 
