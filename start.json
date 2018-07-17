@@ -1,0 +1,10 @@
+{
+  "apps": [{
+    "name": "express-basic",
+    "script": "./src/app.js",
+    "env": {
+      "NODE_ENV": "development",
+      "PORT": 4000
+    }
+  }]
+}
