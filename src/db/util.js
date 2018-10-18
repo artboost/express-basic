@@ -42,11 +42,11 @@ const concatColumnNames = (columns) => {
   return `${columns.map(column => `\`${column}\``).join(' = ?, ')} = ?`;
 };
 
-// Escapes null values in obj to null.
+// Escapes undefined values in obj to null.
 const nullEscape = obj => Object.keys(obj)
   .reduce((acc, key) => ({
     ...acc,
-    [key]: obj[key] || null,
+    [key]: typeof obj[key] !== 'undefined' ? obj[key] : null,
   }), {});
 
 module.exports = {

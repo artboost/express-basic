@@ -1,4 +1,4 @@
-const db = require('../crud');
+const db = require('../operations');
 
 const {
   validateColumns,
