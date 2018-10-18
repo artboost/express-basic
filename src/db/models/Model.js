@@ -1,11 +1,12 @@
 const db = require('../crud');
+
 const {
   validateColumns,
   concatColumnNames,
   nullEscape,
 } = require('../util');
 
-class BaseModel {
+class Model {
   /**
    * Getter for table name. Must be overridden.
    * @return string Table name.
@@ -37,7 +38,7 @@ class BaseModel {
 
   /**
    * All rows in table.
-   * @return {Promise<Array<BaseModel|Entry>>}
+   * @return {Promise<Array<Model|Entry>>}
    */
   static async all() {
     const rows = await db.select(`select * from ${this.TABLE}`);
@@ -48,7 +49,7 @@ class BaseModel {
    * Selects one row from table.
    * @param {object} columns Columns to match against in where, e.g. { id: 1 } -> where id = 1.
    * @param exclude What columns to exclude.
-   * @return {Promise<BaseModel|Entry>}
+   * @return {Promise<Model|Entry>}
    */
   static async findOne(columns, exclude = []) {
     const table = {
@@ -87,7 +88,7 @@ class BaseModel {
 
   /**
    * Upserts
-   * @return {Promise<BaseModel|Entry>}
+   * @return {Promise<Model|Entry>}
    */
   async save() {
     if (this.columns[this.constructor.PRIMARY_KEY]) {
@@ -133,7 +134,7 @@ class BaseModel {
 
   /**
    * @param columns
-   * @return {BaseModel|Entry}
+   * @return {Model|Entry}
    */
   set(columns) {
     const table = {
@@ -164,8 +165,8 @@ class BaseModel {
   }
 }
 
-BaseModel.prototype.toString = function toString() {
+Model.prototype.toString = function toString() {
   return JSON.stringify(this.toJSON());
 };
 
-module.exports.BaseModel = BaseModel;
+module.exports = Model;

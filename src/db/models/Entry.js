@@ -1,6 +1,6 @@
-const { BaseModel } = require('./BaseModel');
+const Model = require('./Model');
 
-class Entry extends BaseModel {
+class Entry extends Model {
   static get TABLE() {
     return 'entry';
   }
