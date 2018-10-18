@@ -1,11 +1,16 @@
 {
   "apps": [{
-    "name": "express-basic",
+    "name": "express-basic-sql",
     "script": "./src/app.js",
     "env": {
       "NODE_ENV": "development",
-      "PORT": 4000,
-      "KEY_PATH":"https://example.org/key.pub"
+      "PORT": 10000,
+      "KEY_PATH":"http://example.org/jwt.key.pub",
+      "DB_HOST": "localhost",
+      "DB_PORT": 3306,
+      "DB_USER": "root",
+      "DB_PASS": "root",
+      "DB_NAME": "log"
     }
   }]
 }

@@ -1,7 +1,3 @@
-# express-basic
-Basic Express service
+# express basic sql
 
-For versions with DB support:
-
-MongoDB: https://github.com/aksel/express-basic-mongodb
-MySQL: https://github.com/aksel/express-basic-sql
+Basic Express service, with a barebones SQL ORM.
