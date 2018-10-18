@@ -40,7 +40,7 @@ const authMiddleware = (required = false, adminRequired = false) => (req, res, n
       return;
     }
 
-    req.user = user;
+    res.locals.user = user;
     next();
   });
 };
