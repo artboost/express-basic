@@ -4,7 +4,13 @@
     "script": "./src/app.js",
     "env": {
       "NODE_ENV": "development",
+<<<<<<< HEAD
       "PORT": 4000
+=======
+      "PORT": 4000,
+      "MONGO_URI": "mongodb://localhost:27017/express-basic",
+      "KEY_PATH":"https://example.org/key.pub"
+>>>>>>> e326f1d... Added auth middleware
     }
   }]
 }

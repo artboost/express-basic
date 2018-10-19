@@ -1,3 +1,5 @@
+const authorize = require('./auth');
+
 // For use with async functions, negating mandatory use of try/catch.
 const executeAsync = fn => (req, res, next) => {
   Promise
@@ -20,4 +22,9 @@ module.exports.executeAsync = executeAsync;
 module.exports.validate = {
   body: required => (req, res, next) => validate(req.body, required, next),
   query: required => (req, res, next) => validate(req.query, required, next),
+};
+
+module.exports.authorize = {
+  admin: authorize(true),
+  user: authorize(),
 };
