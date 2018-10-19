@@ -16,6 +16,7 @@
     "no-use-before-define": "warn",
     "linebreak-style": 0,
     "no-console": 0,
-    "prefer-promise-reject-errors": 0
+    "prefer-promise-reject-errors": 0,
+    "camelcase": 0
   }
 }
