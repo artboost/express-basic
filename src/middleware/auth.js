@@ -8,10 +8,14 @@ const getKey = (header, callback) => {
     .catch(err => callback(err));
 };
 
-const authMiddleware = (adminRequired = false) => (req, res, next) => {
+const authMiddleware = (required = false, adminRequired = false) => (req, res, next) => {
   const authString = req.get('authorization');
   if (!authString) {
-    next({ status: 401 });
+    if (required) {
+      next({ status: 401 });
+    } else {
+      next();
+    }
     return;
   }
 

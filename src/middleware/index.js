@@ -25,6 +25,7 @@ module.exports.validate = {
 };
 
 module.exports.authorize = {
-  admin: authorize(true),
-  user: authorize(),
+  admin: authorize(true, true),
+  user: authorize(true),
+  optional: authorize(),
 };
