@@ -18,7 +18,7 @@ app.use((err, req, res, next) => {
     console.error(err);
     next({
       message: err.toString(),
-      status: 500,
+      status: err.status || 500,
     });
   } else {
     next(err);
