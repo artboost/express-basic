@@ -24,7 +24,7 @@ router.post('/', validateBody(['message']), executeAsync(async (req, res) => {
 
   const entry = await new Entry({ message, category_id: catId }).save();
 
-  res.json(entry.toJSON());
+  res.json(entry);
 }));
 
 /**
@@ -32,7 +32,7 @@ router.post('/', validateBody(['message']), executeAsync(async (req, res) => {
  */
 router.get('/', executeAsync(async (req, res) => {
   const entries = await Entry.all();
-  res.send(entries.toString());
+  res.json(entries);
 }));
 
 module.exports = router;

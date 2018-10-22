@@ -21,7 +21,7 @@ router.use('/:id', executeAsync(async (req, res, next) => {
 }));
 
 router.get('/:id', (req, res) => {
-  res.json(res.locals.entry.toJSON());
+  res.json(res.locals.entry);
 });
 
 /**
@@ -40,7 +40,7 @@ router.post('/:id', validateBody(['message']), executeAsync(async (req, res) => 
 
   await entry.save();
 
-  res.json(entry.toJSON());
+  res.json(entry);
 }));
 
 router.delete('/:id', (req, res) => {
