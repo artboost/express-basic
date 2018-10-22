@@ -31,11 +31,6 @@ class Model {
     throw new Error('Static getter COLUMNS is not overridden.');
   }
 
-  constructor(columns) {
-    this.columns = filterUndefined(columns);
-    this.changes = [];
-  }
-
   /**
    * All rows in table.
    * @return {Promise<Array<Model|Entry>>}
@@ -43,10 +38,6 @@ class Model {
   static async all() {
     const rows = await db.select(`select * from ${this.TABLE}`);
     return rows.map(data => new this(data));
-  }
-
-  static async findOne(columns, options) {
-    return this.find(columns, { ...options, limit: 1 });
   }
 
   /**
@@ -103,50 +94,36 @@ class Model {
     return new this(data);
   }
 
-  /**
-   * Upserts
-   * @return {Promise<Model|Entry>}
-   */
-  async save() {
-    if (this.columns[this.constructor.PRIMARY_KEY]) {
-      // No changes; no need to update, premature return.
-      if (this.changes.length === 0) {
-        return this;
-      }
-      const statement = `
-        update ${this.constructor.TABLE}
-        set ${concatColumnNames(this.changes)}
-        where \`${this.constructor.PRIMARY_KEY}\` = ?;
-      `;
-
-      const changedValues = this.changes.map(column => this.columns[column]);
-      await db.update(statement, [...changedValues, this.columns[this.constructor.PRIMARY_KEY]]);
-
-      this.changes = [];
-    } else {
-      const statement = `
-        insert into ${this.constructor.TABLE}
-        set ${concatColumnNames(Object.keys(this.columns))}   
-      `;
-
-      const { id } = await db.insert(statement, Object.values(this.columns));
-      this.columns[this.constructor.PRIMARY_KEY] = id;
-    }
-
-    return this;
+  static async findOne(columns, options) {
+    return this.find(columns, { ...options, limit: 1 });
   }
 
-  async delete() {
-    if (!this.columns[this.constructor.PRIMARY_KEY]) {
-      console.warn('Attempted to delete un-initialized category');
-      return;
-    }
+  constructor(columns) {
+    this.columns = columns;
+    this.changes = [];
+  }
 
-    const statement = `
-      delete from ${this.constructor.TABLE}
-      where ${this.constructor.PRIMARY_KEY} = ?
-    `;
-    await db.delete(statement, [this.columns[this.constructor.PRIMARY_KEY]]);
+  get columns() {
+    // eslint-disable-next-line no-underscore-dangle
+    return this._c;
+  }
+
+  set columns(columns) {
+    validateColumns(this.table, Object.keys(columns));
+    // eslint-disable-next-line no-underscore-dangle
+    this._c = filterUndefined(columns);
+  }
+
+  get table() {
+    return {
+      name: this.constructor.TABLE,
+      primaryKey: this.constructor.PRIMARY_KEY,
+      columns: this.constructor.COLUMNS,
+    };
+  }
+
+  get primaryKey() {
+    return this.get(this.table.primaryKey);
   }
 
   /**
@@ -154,21 +131,19 @@ class Model {
    * @return {Model|Entry}
    */
   set(columns) {
-    const table = {
-      name: this.constructor.TABLE,
-      primaryKey: this.constructor.PRIMARY_KEY,
-      columns: this.constructor.COLUMNS,
-    };
-
     const columnNames = Object.keys(columns);
-    validateColumns(table, columnNames, true);
+    validateColumns(this.table, columnNames, true);
 
-    columnNames.forEach((column) => {
-      if (columns[column] !== this.columns[column]) {
-        this.columns[column] = columns[column];
+    this.columns = columnNames.reduce((acc, column) => {
+      if (columns[column] !== this.get(column)) {
         this.changes.push(column);
       }
-    });
+
+      return {
+        ...acc,
+        [column]: columns[column],
+      };
+    }, this.columns);
 
     return this;
   }
@@ -177,8 +152,64 @@ class Model {
     return this.columns[column];
   }
 
+  /**
+   * Upserts
+   * @return {Promise<Model|Entry>}
+   */
+  async save() {
+    if (this.primaryKey) {
+      // No changes; no need to update, premature return.
+      if (this.changes.length === 0) {
+        return this;
+      }
+      const statement = `
+        update \`${this.table.name}\`
+        set ${concatColumnNames(this.changes)}
+        where \`${this.table.primaryKey}\` = ?;
+      `;
+
+      await db.update(statement, [...this.changes.map(column => this.get(column)), this.primaryKey]);
+
+      this.changes = [];
+    } else {
+      const statement = `
+        insert into ${this.table.name}
+        set ${concatColumnNames(Object.keys(this.columns))}   
+      `;
+
+      const { id } = await db.insert(statement, Object.values(this.columns));
+
+      // Auto-incremented primary key was inserted.
+      // Select data using it.
+      // This initializes defaults from DB and shit.
+      if (id > 0) {
+        try {
+          const { columns } = await this.constructor.findOne({ id });
+          this.columns = columns;
+        } catch (e) {
+          console.warn('Could not re-init after insert.', e);
+        }
+      }
+    }
+
+    return this;
+  }
+
+  async delete() {
+    if (!this.primaryKey) {
+      console.warn('Attempted to delete un-initialized category');
+      return;
+    }
+
+    const statement = `
+      delete from ${this.table.name}
+      where ${this.table.primaryKey} = ?
+    `;
+    await db.delete(statement, [this.primaryKey]);
+  }
+
   toJSON() {
-    return { [this.constructor.PRIMARY_KEY]: this.columns[this.constructor.PRIMARY_KEY], ...this.columns };
+    return { [this.table.primaryKey]: this.primaryKey, ...this.columns };
   }
 }
 
