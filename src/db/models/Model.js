@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 const db = require('../operations');
 
 const {
@@ -41,7 +42,7 @@ class Model {
   }
 
   /**
-   * Selects one row from table.
+   * Selects rows matching query, mapping out into array of Model.
    * @param {object} columns Columns to match against in where, e.g. { id: 1 } -> where id = 1.
    * @param {object} options
    * @param {string[]} options.include What columns to exclude, e.g. ['id'] => select `id`. Becomes * on empty.
@@ -49,7 +50,26 @@ class Model {
    * @param {number} options.offset
    * @return {Promise<Model|Entry>}
    */
-  static async find(columns, { include = [], limit = 0, offset = 0 } = {}) {
+  static async find(columns, options = {}) {
+    const rows = await this._find(db.select, columns, options);
+    return rows.map(data => new this(data));
+  }
+
+  /**
+   * Selects one row from table, and constructs Model from data.
+   * @param {object} columns Columns to match against in where, e.g. { id: 1 } -> where id = 1.
+   * @param {object} options
+   * @param {string[]} options.include What columns to exclude, e.g. ['id'] => select `id`. Becomes * on empty.
+   * @param {number} options.limit
+   * @param {number} options.offset
+   * @return {Promise<Model|Entry>}
+   */
+  static async findOne(columns, options = {}) {
+    const data = await this._find(db.selectOne, columns, { ...options, limit: 1 });
+    return new this(data);
+  }
+
+  static async _find(executor, columns, { include = [], limit = 0, offset = 0 }) {
     const table = {
       name: this.TABLE,
       primaryKey: this.PRIMARY_KEY,
@@ -85,17 +105,11 @@ class Model {
     const statement = `
       select ${selection}
       from ${this.TABLE}
-      where ${concatColumnNames(columnNames)}
+      where ${concatColumnNames(columnNames, 'and')}
       ${limitStatement}
     `;
 
-    const select = limit === 1 ? db.selectOne : db.select;
-    const data = await select(statement, params);
-    return new this(data);
-  }
-
-  static async findOne(columns, options) {
-    return this.find(columns, { ...options, limit: 1 });
+    return executor(statement, params);
   }
 
   constructor(columns) {
@@ -104,13 +118,11 @@ class Model {
   }
 
   get columns() {
-    // eslint-disable-next-line no-underscore-dangle
     return this._c;
   }
 
   set columns(columns) {
     validateColumns(this.table, Object.keys(columns));
-    // eslint-disable-next-line no-underscore-dangle
     this._c = filterUndefined(columns);
   }
 

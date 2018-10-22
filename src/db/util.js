@@ -32,14 +32,15 @@ Valid: ${table.columns}`;
  *
  * Returns empty string on empty array.
  * @param {Array<string>} columns
+ * @param glue
  * @return {string}
  */
-const concatColumnNames = (columns) => {
+const concatColumnNames = (columns, glue = ',') => {
   if (columns.length <= 0) {
     return '';
   }
 
-  return `${columns.map(column => `\`${column}\``).join(' = ?, ')} = ?`;
+  return `${columns.map(column => `\`${column}\``).join(` = ? ${glue}`)} = ?`;
 };
 
 // Removes undefined undefined values in obj.
