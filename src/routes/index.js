@@ -1,5 +1,7 @@
 const express = require('express');
 
+const category = require('./category');
+
 const entries = require('./entry/entries');
 const entry = require('./entry');
 
@@ -7,6 +9,15 @@ const router = express.Router();
 
 router.get('/', (req, res) => res.send('hello world'));
 
+/**
+ * /category/:id
+ *    GET
+ *
+ * /category/:id/entries
+ *    GET
+ *    POST
+ */
+router.use('/category', category);
 
 /**
  * /entries

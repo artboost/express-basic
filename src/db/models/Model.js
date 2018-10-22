@@ -58,7 +58,7 @@ class Model {
    * @param {number} options.offset
    * @return {Promise<Model|Entry>}
    */
-  static async find(columns, { include = [], limit = 0, offset = 0 }) {
+  static async find(columns, { include = [], limit = 0, offset = 0 } = {}) {
     const table = {
       name: this.TABLE,
       primaryKey: this.PRIMARY_KEY,
