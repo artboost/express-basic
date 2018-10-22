@@ -34,6 +34,10 @@ router.post('/:id', validateBody(['message']), executeAsync(async (req, res) => 
 
   entry.message = req.body.message;
 
+  if (req.body.category_id) {
+    entry.category_id = req.body.category_id;
+  }
+
   await entry.save();
 
   res.json(entry.toJSON());

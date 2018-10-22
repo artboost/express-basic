@@ -13,6 +13,7 @@ class Entry extends Model {
     return [
       'id',
       'message',
+      'category_id',
     ];
   }
 
@@ -24,8 +25,16 @@ class Entry extends Model {
     return this.get('message');
   }
 
+  get category_id() {
+    return this.get('category_id');
+  }
+
   set message(message) {
     return this.set({ message });
+  }
+
+  set category_id(id) {
+    return this.set({ category_id: id });
   }
 }
 

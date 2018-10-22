@@ -3,7 +3,7 @@ const db = require('../operations');
 const {
   validateColumns,
   concatColumnNames,
-  nullEscape,
+  filterUndefined,
 } = require('../util');
 
 class Model {
@@ -32,7 +32,7 @@ class Model {
   }
 
   constructor(columns) {
-    this.columns = nullEscape(columns);
+    this.columns = filterUndefined(columns);
     this.changes = [];
   }
 

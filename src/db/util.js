@@ -42,15 +42,16 @@ const concatColumnNames = (columns) => {
   return `${columns.map(column => `\`${column}\``).join(' = ?, ')} = ?`;
 };
 
-// Escapes undefined values in obj to null.
-const nullEscape = obj => Object.keys(obj)
+// Removes undefined undefined values in obj.
+const filterUndefined = obj => Object.keys(obj)
+  .filter(key => typeof obj[key] !== 'undefined')
   .reduce((acc, key) => ({
     ...acc,
-    [key]: typeof obj[key] !== 'undefined' ? obj[key] : null,
+    [key]: obj[key],
   }), {});
 
 module.exports = {
   validateColumns,
   concatColumnNames,
-  nullEscape,
+  filterUndefined,
 };
