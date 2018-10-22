@@ -45,13 +45,20 @@ class Model {
     return rows.map(data => new this(data));
   }
 
+  static async findOne(columns, options) {
+    return this.find(columns, { ...options, limit: 1 });
+  }
+
   /**
    * Selects one row from table.
    * @param {object} columns Columns to match against in where, e.g. { id: 1 } -> where id = 1.
-   * @param {string[]} include What columns to exclude, e.g. ['id'] => select `id`. Becomes * on empty.
+   * @param {object} options
+   * @param {string[]} options.include What columns to exclude, e.g. ['id'] => select `id`. Becomes * on empty.
+   * @param {number} options.limit
+   * @param {number} options.offset
    * @return {Promise<Model|Entry>}
    */
-  static async findOne(columns, include = []) {
+  static async find(columns, { include = [], limit = 0, offset = 0 }) {
     const table = {
       name: this.TABLE,
       primaryKey: this.PRIMARY_KEY,
@@ -76,14 +83,23 @@ class Model {
 
     params.push(...Object.values(columns));
 
+    let limitStatement;
+    if (limit > 0) {
+      limitStatement = 'limit ?, ?';
+      params.push(offset, limit);
+    } else {
+      limitStatement = '';
+    }
+
     const statement = `
       select ${selection}
       from ${this.TABLE}
       where ${concatColumnNames(columnNames)}
-      limit 1;
+      ${limitStatement}
     `;
 
-    const data = await db.selectOne(statement, params);
+    const select = limit === 1 ? db.selectOne : db.select;
+    const data = await select(statement, params);
     return new this(data);
   }
 

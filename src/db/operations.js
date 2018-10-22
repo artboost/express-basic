@@ -8,6 +8,8 @@ async function select(query, params) {
 }
 
 async function selectOne(query, params) {
+  console.log(query, params);
+
   const rows = await select(query, params);
   if (rows.length > 1) {
     throw new Error('Multiple rows found, expected only one.');
