@@ -48,27 +48,28 @@ class Model {
   /**
    * Selects one row from table.
    * @param {object} columns Columns to match against in where, e.g. { id: 1 } -> where id = 1.
-   * @param exclude What columns to exclude.
+   * @param {string[]} include What columns to exclude, e.g. ['id'] => select `id`. Becomes * on empty.
    * @return {Promise<Model|Entry>}
    */
-  static async findOne(columns, exclude = []) {
+  static async findOne(columns, include = []) {
     const table = {
       name: this.TABLE,
       primaryKey: this.PRIMARY_KEY,
       columns: this.COLUMNS,
     };
 
+    // Validate where clause
     const columnNames = Object.keys(columns);
     validateColumns(table, columnNames);
+
+    // Validate columns to include
+    validateColumns(table, include);
 
     const params = [];
 
     let selection;
-    if (exclude.length > 0) {
-      const includedColumns = this.COLUMNS.filter(column => !exclude.find(excluded => column === excluded));
-      params.push(...includedColumns);
-
-      selection = `?${', ?'.repeat(includedColumns.length - 1)}`;
+    if (include.length > 0) {
+      selection = include.map(c => `\`${c}\``).join(',');
     } else {
       selection = '*';
     }
