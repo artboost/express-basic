@@ -11,7 +11,16 @@ class IllegalArgumentException extends Error {
     this.status = 400;
   }
 }
+
+class ForbiddenError extends Error {
+  constructor(m = 'Forbidden') {
+    super(m);
+    this.status = 403;
+  }
+}
+
 module.exports = {
   NotFoundError,
   IllegalArgumentException,
+  ForbiddenError,
 };
