@@ -143,17 +143,18 @@ class Model {
    * @return {Model|Entry}
    */
   set(columns) {
-    const columnNames = Object.keys(columns);
+    const filtered = filterUndefined(columns);
+    const columnNames = Object.keys(filtered);
     validateColumns(this.table, columnNames, true);
 
     this.columns = columnNames.reduce((acc, column) => {
-      if (columns[column] !== this.get(column)) {
+      if (filtered[column] !== this.get(column)) {
         this.changes.push(column);
       }
 
       return {
         ...acc,
-        [column]: columns[column],
+        [column]: filtered[column],
       };
     }, this.columns);
 
