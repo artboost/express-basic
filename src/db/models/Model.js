@@ -34,7 +34,7 @@ class Model {
 
   /**
    * All rows in table.
-   * @return {Promise<Array<Model|Entry>>}
+   * @return {Promise<Array<Model>>}
    */
   static async all() {
     const rows = await db.select(`select * from ${this.TABLE}`);
@@ -45,10 +45,13 @@ class Model {
    * Selects rows matching query, mapping out into array of Model.
    * @param {object} columns Columns to match against in where, e.g. { id: 1 } -> where id = 1.
    * @param {object} options
-   * @param {string[]} options.include What columns to exclude, e.g. ['id'] => select `id`. Becomes * on empty.
-   * @param {number} options.limit
-   * @param {number} options.offset
-   * @return {Promise<Model|Entry>}
+   * @param {string[]} [options.include] What columns to exclude, e.g. ['id'] => select `id`. Becomes * on empty.
+   * @param {number} [options.limit]
+   * @param {number} [options.offset]
+   * @param {object} [options.order]
+   * @param {string} options.order.column Column to order by
+   * @param {'asc'|'desc'} [options.order.direction=asc] Sort direction
+   * @return {Promise<Model>}
    */
   static async find(columns, options = {}) {
     const rows = await this._find(db.select, columns, options);
@@ -62,14 +65,22 @@ class Model {
    * @param {string[]} options.include What columns to exclude, e.g. ['id'] => select `id`. Becomes * on empty.
    * @param {number} options.limit
    * @param {number} options.offset
-   * @return {Promise<Model|Entry>}
+   * @return {Promise<Model>}
    */
   static async findOne(columns, options = {}) {
-    const data = await this._find(db.selectOne, columns, { ...options, limit: 1 });
+    const data = await this._find(db.selectOne, columns, {
+      ...options,
+      limit: 1,
+    });
     return new this(data);
   }
 
-  static async _find(executor, columns, { include = [], limit = 0, offset = 0 }) {
+  static async _find(executor, columns, {
+    include = [],
+    limit = 0,
+    offset = 0,
+    order,
+  }) {
     const table = {
       name: this.TABLE,
       primaryKey: this.PRIMARY_KEY,
@@ -87,27 +98,30 @@ class Model {
 
     let selection;
     if (include.length > 0) {
-      selection = include.map(c => `\`${c}\``).join(',');
+      selection = include
+        .map(c => `\`${c}\``)
+        .join(',');
     } else {
       selection = '*';
     }
 
     params.push(...Object.values(columns));
 
-    let limitStatement;
-    if (limit > 0) {
-      limitStatement = 'limit ?, ?';
-      params.push(offset, limit);
-    } else {
-      limitStatement = '';
-    }
-
-    const statement = `
+    let statement = `
       select ${selection}
       from ${this.TABLE}
       where ${concatColumnNames(columnNames, 'and')}
-      ${limitStatement}
     `;
+
+    if (limit > 0) {
+      statement += '\nlimit ?, ?';
+      params.push(offset, limit);
+    }
+
+    if (order) {
+      const { column, direction = 'asc' } = order;
+      statement += `\norder by \`${column}\` ${direction}`;
+    }
 
     return executor(statement, params);
   }
@@ -140,7 +154,7 @@ class Model {
 
   /**
    * @param columns
-   * @return {Model|Entry}
+   * @return {Model}
    */
   set(columns) {
     const filtered = filterUndefined(columns);
@@ -167,7 +181,7 @@ class Model {
 
   /**
    * Upserts
-   * @return {Promise<Model|Entry>}
+   * @return {Promise<Model>}
    */
   async save() {
     if (this.primaryKey) {
