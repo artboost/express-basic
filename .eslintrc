@@ -2,7 +2,7 @@
   "parser": "babel-eslint",
   "extends": "airbnb",
   "rules": {
-    "max-len": 0,
+    "max-len": "off",
     "comma-dangle": [
       "error",
       {
@@ -14,9 +14,10 @@
       }
     ],
     "no-use-before-define": "warn",
-    "linebreak-style": 0,
-    "no-console": 0,
-    "prefer-promise-reject-errors": 0,
-    "camelcase": 0
+    "linebreak-style": "off",
+    "no-console": "off",
+    "prefer-promise-reject-errors": "off",
+    "camelcase": "off",
+    "no-underscore-dangle": "off"
   }
 }

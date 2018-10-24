@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 const db = require('../operations');
 
 const {
