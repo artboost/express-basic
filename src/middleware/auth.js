@@ -19,12 +19,13 @@ const authMiddleware = (required = false, adminRequired = false) => (req, res, n
     return;
   }
 
+  res.locals.authChecked = true;
+
   const authString = req.get('authorization');
   if (!authString) {
     if (required) {
       next(new UnauthorizedError());
     } else {
-      res.locals.authChecked = true;
       next();
     }
     return;
@@ -46,7 +47,6 @@ const authMiddleware = (required = false, adminRequired = false) => (req, res, n
     }
 
     res.locals.user = user;
-    res.locals.authChecked = true;
 
     next();
   });
