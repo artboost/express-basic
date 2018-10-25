@@ -9,11 +9,17 @@ const getKey = (header, callback) => {
 };
 
 const authMiddleware = (required = false, adminRequired = false) => (req, res, next) => {
+  if (res.locals.authChecked) {
+    next();
+    return;
+  }
+
   const authString = req.get('authorization');
   if (!authString) {
     if (required) {
       next({ status: 401 });
     } else {
+      res.locals.authChecked = true;
       next();
     }
     return;
@@ -41,6 +47,8 @@ const authMiddleware = (required = false, adminRequired = false) => (req, res, n
     }
 
     res.locals.user = user;
+    res.locals.authChecked = true;
+
     next();
   });
 };
