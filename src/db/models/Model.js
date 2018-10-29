@@ -37,7 +37,7 @@ class Model {
    */
   static async all() {
     const rows = await db.select(`select * from ${this.TABLE}`);
-    return rows.map(data => new this(data));
+    return rows.map(data => new this(data, { isInserted: true }));
   }
 
   /**
@@ -54,7 +54,7 @@ class Model {
    */
   static async find(columns, options = {}) {
     const rows = await this._find(db.select, columns, options);
-    return rows.map(data => new this(data));
+    return rows.map(data => new this(data, { isInserted: true }));
   }
 
   /**
@@ -71,7 +71,7 @@ class Model {
       ...options,
       limit: 1,
     });
-    return new this(data);
+    return new this(data, { isInserted: true });
   }
 
   static async _find(executor, columns, {
@@ -128,9 +128,15 @@ class Model {
     return executor(statement, params);
   }
 
-  constructor(columns) {
+  /**
+   * @param {object} columns
+   * @param {object} [options]
+   * @param {boolean} options.exists=false
+   */
+  constructor(columns, options = {}) {
     this.columns = columns;
     this.changes = [];
+    this.options = options;
   }
 
   get columns() {
@@ -178,6 +184,9 @@ class Model {
   }
 
   get(column) {
+    if (Array.isArray(column)) {
+      return column.map(c => this.columns[c]);
+    }
     return this.columns[column];
   }
 
@@ -185,60 +194,88 @@ class Model {
    * Upserts
    * @return {Promise<Model>}
    */
-  async save() {
-    if (this.primaryKey) {
-      // No changes; no need to update, premature return.
-      if (this.changes.length === 0) {
-        return this;
-      }
-      const statement = `
-        update \`${this.table.name}\`
-        set ${concatColumnNames(this.changes)}
-        where \`${this.table.primaryKey}\` = ?;
-      `;
+  save() {
+    if (!this.options.isInserted) {
+      return this._insert();
+    }
 
-      await db.update(statement, [...this.changes.map(column => this.get(column)), this.primaryKey]);
+    return this._update();
+  }
 
-      this.changes = [];
-    } else {
-      const statement = `
+  async _insert() {
+    const statement = `
         insert into ${this.table.name}
         set ${concatColumnNames(Object.keys(this.columns))}   
       `;
 
-      const { id } = await db.insert(statement, Object.values(this.columns));
 
-      // Auto-incremented primary key was inserted.
-      // Select data using it.
-      // This initializes defaults from DB and shit.
-      if (id > 0) {
-        try {
-          const { columns } = await this.constructor.findOne({ id });
-          this.columns = columns;
-        } catch (e) {
-          console.warn('Could not re-init after insert.', e);
-        }
+    const { id } = await db.insert(statement, Object.values(this.columns));
+
+    // Auto-incremented primary key was inserted.
+    // Select data using it.
+    // This initializes defaults from DB and shit.
+    if (id > 0) {
+      try {
+        const { columns } = await this.constructor.findOne({ id });
+        this.columns = columns;
+      } catch (e) {
+        console.warn('Could not re-init after insert.', e);
       }
     }
 
     return this;
   }
 
+  async _update() {
+    // No changes; no need to update, premature return.
+    if (this.changes.length === 0) {
+      return this;
+    }
+
+    let statement = `
+        update \`${this.table.name}\`
+        set ${concatColumnNames(this.changes)}
+      `;
+
+    const params = [...this.changes.map(column => this.get(column))];
+
+    if (Array.isArray(this.table.primaryKey)) {
+      statement += `where ${concatColumnNames(this.table.primaryKey, 'and ')}`;
+      params.push(...this.primaryKey);
+    } else {
+      statement += `where \`${this.table.primaryKey}\` = ?`;
+      params.push(this.primaryKey);
+    }
+    await db.update(statement, params);
+
+    this.changes = [];
+
+    return this;
+  }
+
   async delete() {
-    if (!this.primaryKey) {
+    if (!this.options.isInserted) {
       console.warn('Attempted to delete un-initialized category');
       return;
     }
 
-    const statement = `
-      delete from ${this.table.name}
-      where ${this.table.primaryKey} = ?
-    `;
-    await db.delete(statement, [this.primaryKey]);
+    let statement = `delete from ${this.table.name}`;
+
+    const params = [];
+
+    if (Array.isArray(this.table.primaryKey)) {
+      statement += `\nwhere ${concatColumnNames(this.table.primaryKey, 'and ')}`;
+      params.push(...this.primaryKey);
+    } else {
+      statement += `\nwhere \`${this.table.primaryKey}\` = ?`;
+      params.push(this.primaryKey);
+    }
+
+    await db.delete(statement, params);
   }
 
   toJSON() {
-    return { [this.table.primaryKey]: this.primaryKey, ...this.columns };
+    return { ...this.columns };
   }
 }
 

@@ -12,7 +12,10 @@ const { IllegalArgumentException } = require('../errors');
  */
 const validateColumns = (table, columns, forUpdate = false) => {
   if (forUpdate) {
-    if (columns.some(column => column === table.primaryKey)) {
+    const isPrimaryKey = Array.isArray(table.primaryKey)
+      ? column => table.primaryKey.some(pk => column === pk)
+      : column => column === table.primaryKey;
+    if (columns.some(isPrimaryKey)) {
       throw new IllegalArgumentException('Primary key is immutable.');
     }
   }
