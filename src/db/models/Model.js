@@ -104,13 +104,16 @@ class Model {
       selection = '*';
     }
 
-    params.push(...Object.values(columns));
-
     let statement = `
       select ${selection}
       from ${this.TABLE}
-      where ${concatColumnNames(columnNames, 'and')}
     `;
+
+
+    if (columnNames.length > 0) {
+      statement += `\nwhere ${concatColumnNames(columnNames, 'and')}`;
+      params.push(...Object.values(columns));
+    }
 
     if (limit > 0) {
       statement += '\nlimit ?, ?';
