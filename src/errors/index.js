@@ -26,6 +26,13 @@ class NotFoundError extends Error {
   }
 }
 
+class ConflictError extends Error {
+  constructor(m = 'Conflict') {
+    super(m);
+    this.status = 409;
+  }
+}
+
 class InternalServerError extends Error {
   constructor(m = 'Internal server error') {
     super(m);
@@ -38,5 +45,6 @@ module.exports = {
   UnauthorizedError,
   ForbiddenError,
   NotFoundError,
+  ConflictError,
   InternalServerError,
 };
