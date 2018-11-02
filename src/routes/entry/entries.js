@@ -8,6 +8,8 @@ const {
 
 const Entry = require('../../db/models/Entry');
 
+const entryCount = require('../../db/queries/entryCount');
+
 const router = express.Router();
 
 // Limit POST to admins
@@ -33,6 +35,14 @@ router.post('/', validateBody(['message']), executeAsync(async (req, res) => {
 router.get('/', executeAsync(async (req, res) => {
   const entries = await Entry.all();
   res.json(entries);
+}));
+
+/**
+ * Retrieves all categories
+ */
+router.get('/count', executeAsync(async (req, res) => {
+  const count = await entryCount();
+  res.json({ count });
 }));
 
 module.exports = router;
