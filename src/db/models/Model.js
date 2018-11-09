@@ -223,6 +223,8 @@ class Model {
       }
     }
 
+    this.options.isInserted = true;
+
     return this;
   }
 
@@ -272,6 +274,8 @@ class Model {
     }
 
     await db.delete(statement, params);
+
+    this.options.isInserted = false;
   }
 
   toJSON() {
