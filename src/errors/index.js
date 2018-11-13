@@ -12,8 +12,8 @@ class HttpError extends Error {
   }
 }
 
-class IllegalArgumentException extends HttpError {
-  constructor(m = 'IllegalArgument') {
+class BadRequestError extends HttpError {
+  constructor(m = 'Bad Request') {
     super(m, 400);
   }
 }
@@ -31,7 +31,7 @@ class ForbiddenError extends HttpError {
 }
 
 class NotFoundError extends HttpError {
-  constructor(m = 'NotFound') {
+  constructor(m = 'Not Found') {
     super(m, 404);
   }
 }
@@ -43,13 +43,13 @@ class ConflictError extends HttpError {
 }
 
 class InternalServerError extends HttpError {
-  constructor(m = 'Internal server error') {
+  constructor(m = 'Internal Server Error') {
     super(m, 500);
   }
 }
 
 module.exports = {
-  IllegalArgumentException,
+  BadRequestError,
   UnauthorizedError,
   ForbiddenError,
   NotFoundError,
