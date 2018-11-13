@@ -1,47 +1,55 @@
-class IllegalArgumentException extends Error {
-  constructor(m = 'IllegalArgument') {
-    super(m);
-    this.status = 400;
+class HttpError extends Error {
+  constructor(message, status) {
+    super(message);
+    this.status = status;
+  }
+
+  toJSON() {
+    return {
+      message: this.message,
+      status: this.status,
+    };
   }
 }
 
-class UnauthorizedError extends Error {
+class BadRequestError extends HttpError {
+  constructor(m = 'Bad Request') {
+    super(m, 400);
+  }
+}
+
+class UnauthorizedError extends HttpError {
   constructor(m = 'Unauthorized') {
-    super(m);
-    this.status = 401;
+    super(m, 401);
   }
 }
 
-class ForbiddenError extends Error {
+class ForbiddenError extends HttpError {
   constructor(m = 'Forbidden') {
-    super(m);
-    this.status = 403;
+    super(m, 403);
   }
 }
 
-class NotFoundError extends Error {
-  constructor(m = 'NotFound') {
-    super(m);
-    this.status = 404;
+class NotFoundError extends HttpError {
+  constructor(m = 'Not Found') {
+    super(m, 404);
   }
 }
 
-class ConflictError extends Error {
+class ConflictError extends HttpError {
   constructor(m = 'Conflict') {
-    super(m);
-    this.status = 409;
+    super(m, 409);
   }
 }
 
-class InternalServerError extends Error {
-  constructor(m = 'Internal server error') {
-    super(m);
-    this.status = 500;
+class InternalServerError extends HttpError {
+  constructor(m = 'Internal Server Error') {
+    super(m, 500);
   }
 }
 
 module.exports = {
-  IllegalArgumentException,
+  BadRequestError,
   UnauthorizedError,
   ForbiddenError,
   NotFoundError,

@@ -1,4 +1,4 @@
-const { IllegalArgumentException } = require('../errors');
+const { BadRequestError } = require('../errors');
 
 /**
  *
@@ -16,7 +16,7 @@ const validateColumns = (table, columns, forUpdate = false) => {
       ? column => table.primaryKey.some(pk => column === pk)
       : column => column === table.primaryKey;
     if (columns.some(isPrimaryKey)) {
-      throw new IllegalArgumentException('Primary key is immutable.');
+      throw new BadRequestError('Primary key is immutable.');
     }
   }
 
@@ -25,7 +25,7 @@ const validateColumns = (table, columns, forUpdate = false) => {
     const msg = `Table \`${table.name}\` does not have any such column.
 Invalid: ${invalidColumns}.
 Valid: ${table.columns}`;
-    throw new IllegalArgumentException(msg);
+    throw new BadRequestError(msg);
   }
 };
 
