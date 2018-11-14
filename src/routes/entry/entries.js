@@ -1,24 +1,21 @@
 const express = require('express');
 
-const {
-  validate: { body: validateBody },
-  executeAsync,
-  authorize: { admin: authorizeAdmin },
-} = require('../../middleware');
-
-const Entry = require('../../db/models/Entry');
+const validate = require('../../middleware/validate');
+const authorize = require('../../middleware/authorize');
+const executeAsync = require('../../middleware/executeAsync');
 
 const entryCount = require('../../db/queries/entryCount');
+const Entry = require('../../db/models/Entry');
 
 const router = express.Router();
 
 // Limit POST to admins
-router.post('*', authorizeAdmin);
+router.post('*', authorize.admin);
 
 /**
  * Creates log entry
  */
-router.post('/', validateBody(['message']), executeAsync(async (req, res) => {
+router.post('/', validate.body(['message']), executeAsync(async (req, res) => {
   const {
     message,
     category_id: catId,

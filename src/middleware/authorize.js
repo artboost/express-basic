@@ -13,7 +13,7 @@ const getKey = (header, callback) => {
     .catch(err => callback(err));
 };
 
-const authMiddleware = (required = false, adminRequired = false) => (req, res, next) => {
+const authorize = (required = false, adminRequired = false) => (req, res, next) => {
   if (res.locals.authChecked) {
     next();
     return;
@@ -52,4 +52,8 @@ const authMiddleware = (required = false, adminRequired = false) => (req, res, n
   });
 };
 
-module.exports = authMiddleware;
+module.exports = {
+  admin: authorize(true, true),
+  user: authorize(true),
+  optional: authorize(),
+};
