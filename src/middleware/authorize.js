@@ -43,9 +43,7 @@ const authorize = (requiredType = types.OPTIONAL) => (req, res, next) => {
 
   jwt.verify(token, getKey, { algorithm: ['RS256'] }, (err, decoded) => {
     if (err) {
-      res.setHeader('WWW-Authenticate', `Bearer,
-error="invalid_token",
-error_description="${err.message}"`);
+      res.setHeader('WWW-Authenticate', `Bearer, error="invalid_token", error_description="${err.message}"`);
       next(new UnauthorizedError(err.message));
       return;
     }
@@ -53,17 +51,13 @@ error_description="${err.message}"`);
     const { user } = decoded;
 
     if (requiredType === types.USER && user.is_guest) {
-      res.setHeader('WWW-Authenticate', `Bearer,
-error="insufficient_scope",
-error_description="Guests not allowed; must be a registered user."`);
+      res.setHeader('WWW-Authenticate', 'Bearer, error="insufficient_scope", error_description="Guests not allowed; must be a registered user."');
       next(new ForbiddenError());
       return;
     }
 
     if (requiredType === types.ADMIN && user.is_admin) {
-      res.setHeader('WWW-Authenticate', `Bearer,
-error=insufficient_scope,
-error_description="Admins only."`);
+      res.setHeader('WWW-Authenticate', 'Bearer, error=insufficient_scope, error_description="Admins only."');
       next(new ForbiddenError());
       return;
     }
