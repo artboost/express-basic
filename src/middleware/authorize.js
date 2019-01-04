@@ -13,7 +13,14 @@ const getKey = (header, callback) => {
     .catch(err => callback(err));
 };
 
-const authorize = (required = false, adminRequired = false) => (req, res, next) => {
+const types = {
+  OPTIONAL: 'optional',
+  GUEST: 'guest',
+  USER: 'user',
+  ADMIN: 'admin',
+};
+
+const authorize = (requiredType = types.OPTIONAL) => (req, res, next) => {
   if (res.locals.authChecked) {
     next();
     return;
@@ -23,7 +30,8 @@ const authorize = (required = false, adminRequired = false) => (req, res, next) 
 
   const authString = req.get('authorization');
   if (!authString) {
-    if (required) {
+    if (requiredType !== types.OPTIONAL) {
+      res.setHeader('WWW-Authenticate', 'Bearer');
       next(new UnauthorizedError());
     } else {
       next();
@@ -35,14 +43,22 @@ const authorize = (required = false, adminRequired = false) => (req, res, next) 
 
   jwt.verify(token, getKey, { algorithm: ['RS256'] }, (err, decoded) => {
     if (err) {
+      res.setHeader('WWW-Authenticate', `Bearer, error="invalid_token", error_description="${err.message}"`);
       next(new UnauthorizedError(err.message));
       return;
     }
 
     const { user } = decoded;
 
-    if (adminRequired && !user.is_admin) {
-      next(new ForbiddenError('Not admin'));
+    if (requiredType === types.USER && user.is_guest) {
+      res.setHeader('WWW-Authenticate', 'Bearer, error="insufficient_scope", error_description="Guests not allowed; must be a registered user."');
+      next(new ForbiddenError());
+      return;
+    }
+
+    if (requiredType === types.ADMIN && user.is_admin) {
+      res.setHeader('WWW-Authenticate', 'Bearer, error=insufficient_scope, error_description="Admins only."');
+      next(new ForbiddenError());
       return;
     }
 
@@ -53,7 +69,8 @@ const authorize = (required = false, adminRequired = false) => (req, res, next) 
 };
 
 module.exports = {
-  admin: authorize(true, true),
-  user: authorize(true),
   optional: authorize(),
+  guest: authorize(types.GUEST),
+  user: authorize(types.USER),
+  admin: authorize(types.ADMIN),
 };
