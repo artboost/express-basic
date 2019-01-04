@@ -1,10 +1,9 @@
 const express = require('express');
 const test = require('../db/models/test');
-const {
-  authorize,
-  validate,
-  executeAsync,
-} = require('../middleware');
+
+const authorize = require('../middleware/authorize');
+const executeAsync = require('../middleware/executeAsync');
+const validate = require('../middleware/validate');
 
 const router = express.Router();
 
