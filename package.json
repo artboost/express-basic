@@ -13,6 +13,7 @@
     "axios": "^0.18.0",
     "cors": "^2.8.4",
     "express": "^4.16.3",
+    "express-model-validator": "^2.0.0",
     "jsonwebtoken": "^8.3.0",
     "mongoose": "^5.2.4"
   },
