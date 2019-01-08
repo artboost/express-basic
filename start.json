@@ -6,7 +6,7 @@
       "NODE_ENV": "development",
       "PORT": 4000,
       "MONGO_URI": "mongodb://localhost:27017/express-basic",
-      "KEY_PATH":"https://example.org/key.pub"
+      "KEY_PATH":"https://static.artboost.com/jwt.dev.key.pub"
     }
   }]
 }
