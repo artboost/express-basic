@@ -2,7 +2,7 @@
   "name": "express-basic-sql",
   "version": "2.0.0",
   "private": false,
-  "repository": "https://github.com/artboost/express-basic-sql",
+  "repository": "https://github.com/artboost/express-basic/tree/sql",
   "license": "MIT",
   "scripts": {
     "start": "cross-env NODE_ENV=development node ./src/bin/www.js",
@@ -13,6 +13,7 @@
     "axios": "^0.18.0",
     "cors": "^2.8.4",
     "express": "^4.16.3",
+    "express-model-validator": "^2.0.0",
     "jsonwebtoken": "^8.3.0",
     "mysql2": "^1.6.1"
   },
