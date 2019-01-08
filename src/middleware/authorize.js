@@ -56,7 +56,7 @@ const authorize = (requiredType = types.OPTIONAL) => (req, res, next) => {
       return;
     }
 
-    if (requiredType === types.ADMIN && user.is_admin) {
+    if (requiredType === types.ADMIN && !user.is_admin) {
       res.setHeader('WWW-Authenticate', 'Bearer, error=insufficient_scope, error_description="Admins only."');
       next(new ForbiddenError());
       return;

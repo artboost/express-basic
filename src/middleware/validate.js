@@ -1,4 +1,8 @@
-const validate = (object = {}, required, next) => {
+const { validate } = require('express-model-validator');
+
+const { BadRequestError } = require('../errors');
+
+const keyValidator = (object = {}, required, next) => {
   const keys = Object.keys(object);
 
   const missing = required.filter(column => keys.indexOf(column) === -1);
@@ -9,7 +13,19 @@ const validate = (object = {}, required, next) => {
   }
 };
 
+// As Express middleware
+const validateMiddleware = model => (req, res, next) => {
+  if (validate(model, req.body)) {
+    next();
+  } else {
+    next(new BadRequestError(`Invalid body.\nExpected model: ${JSON.stringify(model)}`));
+  }
+};
+
 module.exports = {
-  body: required => (req, res, next) => validate(req.body, required, next),
-  query: required => (req, res, next) => validate(req.query, required, next),
+  key: {
+    body: required => (req, res, next) => keyValidator(req.body, required, next),
+    query: required => (req, res, next) => keyValidator(req.query, required, next),
+  },
+  model: validateMiddleware,
 };
