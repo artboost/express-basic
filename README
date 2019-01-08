@@ -1,4 +1,4 @@
 # express-basic
-Basic Express service
+Basic Express service, with some Artboost-specific changes.
 
 For versions with DB support, checkout the branches (mongodb and sql)
