@@ -1,3 +1,2 @@
-# express basic sql
-
+# express-basic
 Basic Express service, with a barebones SQL ORM.
