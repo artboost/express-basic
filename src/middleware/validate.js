@@ -18,7 +18,7 @@ const validateMiddleware = model => (req, res, next) => {
   if (validate(model, req.body)) {
     next();
   } else {
-    next(new BadRequestError(`Invalid body.\nExpected model: ${JSON.stringify(model)}`));
+    next(new BadRequestError(`Invalid body.\nExpected model: { ${Object.keys(model).join(', ')} }`));
   }
 };
 
