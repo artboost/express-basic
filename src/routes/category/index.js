@@ -28,7 +28,7 @@ router.get('/:id/entries', executeAsync(async (req, res) => {
 /**
  * Add log entry to category
  */
-router.post('/:id/entries', authorize.admin, validate.body(['message']), executeAsync(async (req, res) => {
+router.post('/:id/entries', authorize.admin, validate.key.body(['message']), executeAsync(async (req, res) => {
   const { message } = req.body;
 
   const entry = await new Entry({ message, category_id: req.params.id }).save();

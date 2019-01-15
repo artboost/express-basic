@@ -27,7 +27,7 @@ router.get('/:id', (req, res) => {
  * ID is immutable.
  * Use DB directly to update ID if absolutely necessary.
  */
-router.post('/:id', validate.body(['message']), executeAsync(async (req, res) => {
+router.post('/:id', validate.key.body(['message']), executeAsync(async (req, res) => {
   const { entry } = res.locals;
 
   entry.message = req.body.message;
