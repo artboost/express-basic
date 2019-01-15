@@ -15,7 +15,7 @@ router.post('*', authorize.admin);
 /**
  * Creates log entry
  */
-router.post('/', validate.body(['message']), executeAsync(async (req, res) => {
+router.post('/', validate.key.body(['message']), executeAsync(async (req, res) => {
   const {
     message,
     category_id: catId,

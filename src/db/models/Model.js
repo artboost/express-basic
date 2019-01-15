@@ -44,7 +44,7 @@ class Model {
    * Selects rows matching query, mapping out into array of Model.
    * @param {object} columns Columns to match against in where, e.g. { id: 1 } -> where id = 1.
    * @param {object} options
-   * @param {string[]} [options.include] What columns to exclude, e.g. ['id'] => select `id`. Becomes * on empty.
+   * @param {string[]} [options.include] What columns to include, e.g. ['id'] => select `id`. Becomes * on empty.
    * @param {number} [options.limit]
    * @param {number} [options.offset]
    * @param {object} [options.order]
@@ -61,7 +61,7 @@ class Model {
    * Selects one row from table, and constructs Model from data.
    * @param {object} columns Columns to match against in where, e.g. { id: 1 } -> where id = 1.
    * @param {object} options
-   * @param {string[]} options.include What columns to exclude, e.g. ['id'] => select `id`. Becomes * on empty.
+   * @param {string[]} options.include What columns to include, e.g. ['id'] => select `id`. Becomes * on empty.
    * @param {number} options.limit
    * @param {number} options.offset
    * @return {Promise<Model>}
