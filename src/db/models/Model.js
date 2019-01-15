@@ -115,14 +115,14 @@ class Model {
       params.push(...Object.values(columns));
     }
 
-    if (limit > 0) {
-      statement += '\nlimit ?, ?';
-      params.push(offset, limit);
-    }
-
     if (order) {
       const { column, direction = 'asc' } = order;
       statement += `\norder by \`${column}\` ${direction}`;
+    }
+
+    if (limit > 0) {
+      statement += '\nlimit ?, ?';
+      params.push(offset, limit);
     }
 
     return executor(statement, params);
