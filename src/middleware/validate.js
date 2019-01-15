@@ -13,12 +13,16 @@ const keyValidator = (object = {}, required, next) => {
   }
 };
 
-// As Express middleware
-const validateMiddleware = model => (req, res, next) => {
-  if (validate(model, req.body)) {
+/**
+ * @param model object The model to validate against.
+ * @param {'body'|'query'} [toValidate=body] Which object to validate, body (default) or query.
+ * @return {Function} Express middleware.
+ */
+const validateMiddleware = (model, toValidate = 'body') => (req, res, next) => {
+  if (validate(model, req[toValidate])) {
     next();
   } else {
-    next(new BadRequestError(`Invalid body.\nExpected model: { ${Object.keys(model).join(', ')} }`));
+    next(new BadRequestError(`Invalid ${toValidate}.\nExpected model: { ${Object.keys(model).join(', ')} }`));
   }
 };
 
