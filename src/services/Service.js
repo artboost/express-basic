@@ -72,7 +72,7 @@ class Service {
       method,
       url,
       data: body,
-    })
+    });
   }
 }
 
