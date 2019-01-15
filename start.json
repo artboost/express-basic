@@ -6,6 +6,7 @@
       "NODE_ENV": "development",
       "PORT": 10000,
       "KEY_PATH":"https://static.artboost.com/jwt.dev.key.pub",
+      "SERVICE_INTEGRATION_URL": "http://localhost:10000",
       "DB_HOST": "localhost",
       "DB_PORT": 3306,
       "DB_USER": "root",
