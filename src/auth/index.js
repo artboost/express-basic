@@ -1,14 +1,8 @@
 const jwt = require('jsonwebtoken');
-const axios = require('axios');
 
 const { UnauthorizedError } = require('../errors');
 
-const getKey = (header, callback) => {
-  const keyPath = process.env.KEY_PATH;
-  axios.get(keyPath)
-    .then(res => callback(null, res.data))
-    .catch(err => callback(err));
-};
+const getKey = require('./getKey');
 
 const authenticate = token => new Promise((resolve, reject) => {
   jwt.verify(token, getKey, { algorithm: ['RS256'] }, (err, decoded) => {
