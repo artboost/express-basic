@@ -1,17 +1,9 @@
-const jwt = require('jsonwebtoken');
-const axios = require('axios');
+const authenticate = require('../auth');
 
 const {
   UnauthorizedError,
   ForbiddenError,
 } = require('../errors');
-
-const getKey = (header, callback) => {
-  const keyPath = process.env.KEY_PATH || 'https://example.org/key.pub';
-  axios.get(keyPath)
-    .then(res => callback(null, res.data))
-    .catch(err => callback(err));
-};
 
 const types = {
   OPTIONAL: 'optional',
@@ -41,30 +33,24 @@ const authorize = (requiredType = types.OPTIONAL) => (req, res, next) => {
 
   const token = authString.split(' ').pop();
 
-  jwt.verify(token, getKey, { algorithm: ['RS256'] }, (err, decoded) => {
-    if (err) {
-      res.setHeader('WWW-Authenticate', `Bearer, error="invalid_token", error_description="${err.message}"`);
-      next(new UnauthorizedError(err.message));
-      return;
-    }
-
-    const { user } = decoded;
-
+  authenticate(token).then((user) => {
     if (requiredType === types.USER && user.is_guest) {
-      res.setHeader('WWW-Authenticate', 'Bearer, error="insufficient_scope", error_description="Guests not allowed; must be a registered user."');
-      next(new ForbiddenError());
-      return;
+      throw new ForbiddenError('Bearer, error="insufficient_scope", error_description="Guests not allowed; must be a registered user."');
     }
 
     if (requiredType === types.ADMIN && !user.is_admin) {
-      res.setHeader('WWW-Authenticate', 'Bearer, error=insufficient_scope, error_description="Admins only."');
-      next(new ForbiddenError());
-      return;
+      throw new ForbiddenError('Bearer, error=insufficient_scope, error_description="Admins only."');
     }
 
+    return user;
+  }).then((user) => {
     res.locals.user = user;
+    res.locals.jwt = token;
 
     next();
+  }).catch((err) => {
+    res.setHeader('WWW-Authenticate', err.message);
+    next(err);
   });
 };
 
