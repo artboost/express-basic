@@ -50,7 +50,7 @@ class Model {
    * @param {object} [options.order]
    * @param {string} options.order.column Column to order by
    * @param {'asc'|'desc'} [options.order.direction=asc] Sort direction
-   * @return {Promise<Model>}
+   * @return {Promise<Model[]>}
    */
   static async find(columns, options = {}) {
     const rows = await this._find(db.select, columns, options);
@@ -126,6 +126,17 @@ class Model {
     }
 
     return executor(statement, params);
+  }
+
+  /**
+   * Executes select, constructs models from resulting rows.
+   * @param {string} query.
+   * @param {string[]} params
+   * @return {Promise<Model[]>}
+   */
+  static async select(query, params) {
+    const rows = await db.select(query, params);
+    return rows.map(data => new this(data, { isInserted: true }));
   }
 
   /**
