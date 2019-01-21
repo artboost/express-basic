@@ -34,11 +34,11 @@ const authorize = (requiredType = types.OPTIONAL) => (req, res, next) => {
   const token = authString.split(' ').pop();
 
   authenticate(token).then((user) => {
-    if (requiredType === types.USER && user.is_guest) {
+    if (requiredType === types.USER && user.type === 'guest') {
       throw new ForbiddenError('Bearer, error="insufficient_scope", error_description="Guests not allowed; must be a registered user."');
     }
 
-    if (requiredType === types.ADMIN && !user.is_admin) {
+    if (requiredType === types.ADMIN && user.type !== 'admin') {
       throw new ForbiddenError('Bearer, error=insufficient_scope, error_description="Admins only."');
     }
 
