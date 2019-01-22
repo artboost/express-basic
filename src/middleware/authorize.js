@@ -10,6 +10,7 @@ const types = {
   GUEST: 'guest',
   USER: 'user',
   ADMIN: 'admin',
+  SERVICE: 'service',
 };
 
 const authorize = (requiredType = types.OPTIONAL) => (req, res, next) => {
@@ -33,20 +34,27 @@ const authorize = (requiredType = types.OPTIONAL) => (req, res, next) => {
 
   const token = authString.split(' ').pop();
 
-  authenticate(token).then((user) => {
-    if (requiredType === types.USER && user.type === 'guest') {
-      throw new ForbiddenError('Bearer, error="insufficient_scope", error_description="Guests not allowed; must be a registered user."');
-    }
+  authenticate(token).then((payload) => {
+    if (requiredType === types.SERVICE) {
+      if (payload.type === 'service') {
+        res.locals.service = payload.service;
+      } else {
+        throw new ForbiddenError('Bearer, error=insufficient_scope, error_description="Service only."');
+      }
+    } else {
+      const { user } = payload;
+      if (requiredType === types.USER && user.type === 'guest') {
+        throw new ForbiddenError('Bearer, error="insufficient_scope", error_description="Guests not allowed; must be a registered user."');
+      }
 
-    if (requiredType === types.ADMIN && user.type !== 'admin') {
-      throw new ForbiddenError('Bearer, error=insufficient_scope, error_description="Admins only."');
-    }
+      if (requiredType === types.ADMIN && user.type !== 'admin') {
+        throw new ForbiddenError('Bearer, error=insufficient_scope, error_description="Admins only."');
+      }
 
-    return user;
-  }).then((user) => {
-    res.locals.user = user;
+      res.locals.user = user;
+    }
+  }).then(() => {
     res.locals.jwt = token;
-
     next();
   }).catch((err) => {
     res.setHeader('WWW-Authenticate', err.message);
@@ -59,4 +67,5 @@ module.exports = {
   guest: authorize(types.GUEST),
   user: authorize(types.USER),
   admin: authorize(types.ADMIN),
+  service: authorize(types.SERVICE),
 };
