@@ -22,5 +22,14 @@ process.on('SIGINT', () => {
       console.error(err);
       process.exit(1);
     }
+
+    // disconnect DB
+    db.disconnect.then(() => {
+      console.log('Mongoose connection disconnected');
+      process.exit(0);
+    }).catch((e) => {
+      console.error('Mongoose could not disconnect', e);
+      process.exit(1);
+    });
   });
 });
