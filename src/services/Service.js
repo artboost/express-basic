@@ -1,5 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 const axios = require('axios');
+const { executeRequest } = require('./util');
 
 class Service {
   /**
@@ -68,11 +69,13 @@ class Service {
       headers.Authorization = `Bearer ${token}`;
     }
 
-    return axios({
+    const request = axios({
       method,
       url,
       data: body,
     });
+
+    return executeRequest(request);
   }
 }
 
