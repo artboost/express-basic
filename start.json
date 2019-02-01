@@ -6,12 +6,13 @@
       "NODE_ENV": "development",
       "PORT": 10000,
       "KEY_PATH":"https://static.artboost.com/jwt.dev.key.pub",
-      "SERVICE_INTEGRATION_URL": "http://localhost:10000",
       "DB_HOST": "localhost",
       "DB_PORT": 3306,
       "DB_USER": "root",
       "DB_PASS": "root",
-      "DB_NAME": "log"
+      "DB_NAME": "log",
+      "AUTH_SERVICE_URL": "http://localhost:3005",
+      "SERVICE_ID": "BASIC_d3cZPTLEtRBnWR7CzbAJjyHBH32P7jYfy2kSEeLSJdgkx9TMY7TjWLPybM"
     }
   }]
 }
