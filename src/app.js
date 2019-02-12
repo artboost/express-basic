@@ -7,13 +7,8 @@ const app = express();
 
 // MIDDLEWARE
 app.use(cors({
-  // Allow all origins in prod;
-  // Allow request origin in dev.
-  // This is a workaround, as Chrome does not adhere to the standard, and considers ports to be
-  // a different origin. E.g. localhost:3000 !== localhost:3005.
-  // In addition, it refuses wildcard origins when sending credentials: include.
-  // Therefore, to be able to send response cookies in dev, this shit must be added ;_;
-  origin: process.env.NODE_ENV === 'production' ? '*' : (origin, callback) => callback(null, true),
+  // Allow all origins; respond with requester origin.
+  origin: (origin, callback) => callback(null, true),
   credentials: true,
 }));
 app.use(express.json());
