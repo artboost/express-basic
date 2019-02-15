@@ -1,5 +1,8 @@
 /* eslint-disable no-underscore-dangle */
 const axios = require('axios');
+
+const AuthService = require('./AuthService');
+
 const { executeRequest } = require('./util');
 
 class Service {
@@ -13,66 +16,59 @@ class Service {
 
   /**
    * @param endpoint
-   * @param [options]={}
-   * @param [options.body] {}
-   * @param [options.token] JWT
+   * @param {{ [body]: {}, [authorize]: boolean }} [options]
    */
-  static get(endpoint, options = {}) {
+  static get(endpoint, options) {
     return this._fetch('get', endpoint, options);
   }
 
   /**
    * @param endpoint
-   * @param [options]={}
-   * @param [options.body] {}
-   * @param [options.token] JWT
+   * @param {{ [body]: {}, [authorize]: boolean }} [options]
    */
-  static post(endpoint, options = {}) {
+  static post(endpoint, options) {
     return this._fetch('post', endpoint, options);
   }
 
   /**
    * @param endpoint
-   * @param [options]={}
-   * @param [options.body] {}
-   * @param [options.token] JWT
+   * @param {{ [body]: {}, [authorize]: boolean }} [options]
    */
-  static put(endpoint, options = {}) {
+  static put(endpoint, options) {
     return this._fetch('put', endpoint, options);
   }
 
   /**
    * @param endpoint
-   * @param [options]={}
-   * @param [options.body] {}
-   * @param [options.token] JWT
+   * @param {{ [body]: {}, [authorize]: boolean }} [options]
    */
-  static delete(endpoint, options = {}) {
+  static delete(endpoint, options) {
     return this._fetch('delete', endpoint, options);
   }
 
   /**
-   * @param method
-   * @param endpoint
-   * @param options
-   * @param [options.body] {}
-   * @param [options.token] JWT
+   * @param {'get'|'post'|'put'|'delete'} method
+   * @param {string} endpoint
+   * @param {{ [body]: {}, [authorize]: boolean }} [options]
+   * @return {Promise<*>}
+   * @private
    */
-  static _fetch(method, endpoint, { body, token }) {
+  static async _fetch(method, endpoint, options = {}) {
     const url = `${this.URL}/${endpoint}`;
 
     const headers = {
       'Content-Type': 'application/json',
     };
 
-    if (token) {
+    if (options.authorize) {
+      const token = await AuthService.getServiceToken();
       headers.Authorization = `Bearer ${token}`;
     }
 
     const request = axios({
       method,
       url,
-      data: body,
+      data: options.body,
     });
 
     return executeRequest(request);
