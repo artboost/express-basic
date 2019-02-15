@@ -68,6 +68,7 @@ class Service {
     const request = axios({
       method,
       url,
+      headers,
       data: options.body,
     });
 
