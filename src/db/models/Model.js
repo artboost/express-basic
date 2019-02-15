@@ -172,6 +172,14 @@ class Model {
   }
 
   /**
+   * Doc is not inserted, or and has changes.
+   * @return {boolean}
+   */
+  get hasChanges() {
+    return !this.options.isInserted || this.changes.length > 0;
+  }
+
+  /**
    * @param columns
    * @return {Model}
    */
@@ -205,7 +213,12 @@ class Model {
    * Upserts
    * @return {Promise<Model>}
    */
-  save() {
+  async save() {
+    // No changes; no need to insert/update, premature return.
+    if (!this.hasChanges) {
+      return this;
+    }
+
     if (!this.options.isInserted) {
       return this._insert();
     }
@@ -240,11 +253,6 @@ class Model {
   }
 
   async _update() {
-    // No changes; no need to update, premature return.
-    if (this.changes.length === 0) {
-      return this;
-    }
-
     let statement = `
         update \`${this.table.name}\`
         set ${concatColumnNames(this.changes)}
