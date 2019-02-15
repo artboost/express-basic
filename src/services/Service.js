@@ -13,52 +13,42 @@ class Service {
 
   /**
    * @param endpoint
-   * @param [options]={}
-   * @param [options.body] {}
-   * @param [options.token] JWT
+   * @param {{ [body]: {}, [token]: string }} [options]
    */
-  static get(endpoint, options = {}) {
+  static get(endpoint, options) {
     return this._fetch('get', endpoint, options);
   }
 
   /**
    * @param endpoint
-   * @param [options]={}
-   * @param [options.body] {}
-   * @param [options.token] JWT
+   * @param {{ [body]: {}, [token]: string }} [options]
    */
-  static post(endpoint, options = {}) {
+  static post(endpoint, options) {
     return this._fetch('post', endpoint, options);
   }
 
   /**
    * @param endpoint
-   * @param [options]={}
-   * @param [options.body] {}
-   * @param [options.token] JWT
+   * @param {{ [body]: {}, [token]: string }} [options]
    */
-  static put(endpoint, options = {}) {
+  static put(endpoint, options) {
     return this._fetch('put', endpoint, options);
   }
 
   /**
    * @param endpoint
-   * @param [options]={}
-   * @param [options.body] {}
-   * @param [options.token] JWT
+   * @param {{ [body]: {}, [token]: string }} [options]
    */
-  static delete(endpoint, options = {}) {
+  static delete(endpoint, options) {
     return this._fetch('delete', endpoint, options);
   }
 
   /**
    * @param method
    * @param endpoint
-   * @param options
-   * @param [options.body] {}
-   * @param [options.token] JWT
+   * @param {{ [body]: {}, [token]: string }} [options]
    */
-  static _fetch(method, endpoint, { body, token }) {
+  static _fetch(method, endpoint, { body, token } = {}) {
     const url = `${this.URL}/${endpoint}`;
 
     const headers = {
