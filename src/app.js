@@ -10,6 +10,7 @@ app.use(cors({
   // Allow all origins; respond with requester origin.
   origin: (origin, callback) => callback(null, true),
   credentials: true,
+  exposedHeaders: ['WWW-Authenticate'],
 }));
 app.use(express.json());
 
