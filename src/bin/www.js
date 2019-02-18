@@ -24,7 +24,7 @@ process.on('SIGINT', () => {
     }
 
     // disconnect DB
-    db.disconnect.then(() => {
+    db.disconnect().then(() => {
       console.log('Mongoose connection disconnected');
       process.exit(0);
     }).catch((e) => {
