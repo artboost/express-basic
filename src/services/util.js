@@ -1,4 +1,4 @@
-const errors = require('../errors');
+const errors = require('@artboost/http-errors');
 
 /**
  * @param e
