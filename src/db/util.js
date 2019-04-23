@@ -1,4 +1,4 @@
-const { BadRequestError } = require('../errors');
+const { BadRequestError } = require('@artboost/http-errors');
 
 /**
  *

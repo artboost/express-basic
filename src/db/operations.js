@@ -1,5 +1,6 @@
+const { NotFoundError } = require('@artboost/http-errors');
+
 const pool = require('./pool');
-const { NotFoundError } = require('../errors');
 
 async function select(query, params) {
   const [rows] = await pool.execute(query, params);

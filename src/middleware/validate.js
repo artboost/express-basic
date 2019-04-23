@@ -1,6 +1,6 @@
 const { validate } = require('express-model-validator');
 
-const { BadRequestError } = require('../errors');
+const { BadRequestError } = require('@artboost/http-errors');
 
 const keyValidator = (object = {}, required, next) => {
   const keys = Object.keys(object);
