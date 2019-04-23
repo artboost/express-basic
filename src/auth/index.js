@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-const { UnauthorizedError } = require('../errors');
+const { UnauthorizedError } = require('@artboost/http-errors');
 
 const getKey = require('./getKey');
 

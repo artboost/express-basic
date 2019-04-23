@@ -1,9 +1,9 @@
-const authenticate = require('../auth');
-
 const {
   UnauthorizedError,
   ForbiddenError,
-} = require('../errors');
+} = require('@artboost/http-errors');
+
+const authenticate = require('../auth');
 
 const types = {
   OPTIONAL: 'optional',

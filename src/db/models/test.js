@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { NotFoundError } = require('../../errors');
+const { NotFoundError } = require('@artboost/http-errors');
 
 const testSchema = mongoose.Schema({ message: String });
 
