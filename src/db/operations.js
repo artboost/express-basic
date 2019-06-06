@@ -2,8 +2,21 @@ const { NotFoundError } = require('@artboost/http-errors');
 
 const pool = require('./pool');
 
+const exec = async (query, params) => {
+  const conn = await pool.getConnection();
+
+  try {
+    return await conn.execute(query, params);
+  } finally {
+    // Release and unprepare statement after execution
+    // Otherwise leaks prepared statements
+    conn.release();
+    conn.unprepare(query);
+  }
+};
+
 async function select(query, params) {
-  const [rows] = await pool.execute(query, params);
+  const [rows] = await exec(query, params);
 
   return rows;
 }
@@ -22,16 +35,16 @@ async function selectOne(query, params) {
 }
 
 async function insert(query, params) {
-  const [{ insertId, affectedRows }] = await pool.execute(query, params);
+  const [{ insertId, affectedRows }] = await exec(query, params);
   return { id: insertId, affectedRows };
 }
 
 async function update(query, params) {
-  await pool.execute(query, params);
+  await exec(query, params);
 }
 
 async function del(query, params) {
-  await pool.execute(query, params);
+  await exec(query, params);
 }
 
 module.exports = {
