@@ -10,7 +10,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@artboost/http-errors": "github:artboost/http-errors",
+    "@artboost/http-errors": "^3.0.0",
     "axios": "^0.18.0",
     "cors": "^2.8.4",
     "express": "^4.16.4",
