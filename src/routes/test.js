@@ -17,7 +17,7 @@ router.get('/:id', authorize.optional, executeAsync(async (req, res) => {
   res.json(doc);
 }));
 
-router.post('/', authorize.admin, validate.body(['message']), executeAsync(async (req, res) => {
+router.post('/', authorize.admin, validate.key.body(['message']), executeAsync(async (req, res) => {
   const newTest = await test.insert(req.body.message);
   res.json(newTest);
 }));
