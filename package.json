@@ -1,12 +1,10 @@
 {
   "name": "express-basic",
-  "version": "2.0.0",
-  "private": false,
+  "version": "3.0.0",
+  "private": true,
   "repository": "https://github.com/artboost/express-basic",
   "license": "MIT",
   "scripts": {
-    "start": "cross-env NODE_ENV=development node ./src/bin/www.js",
-    "prod": "cross-env NODE_ENV=production node ./src/bin/www.js ",
     "lint": "eslint ."
   },
   "dependencies": {
