@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@artboost/http-errors": "^3.0.0",
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "cors": "^2.8.4",
     "express": "^4.16.4",
     "express-model-validator": "^3.0.2",
