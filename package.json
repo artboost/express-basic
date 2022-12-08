@@ -11,7 +11,7 @@
     "@artboost/http-errors": "^3.0.0",
     "axios": "^0.18.0",
     "cors": "^2.8.4",
-    "express": "^4.16.4",
+    "express": "^4.18.2",
     "express-model-validator": "^3.0.2",
     "jsonwebtoken": "^8.4.0"
   },
